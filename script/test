@@ -1,0 +1,4 @@
+import numpy as np
+def test(x):
+    return x+2
+print(test(np.array([1,2,3])))
