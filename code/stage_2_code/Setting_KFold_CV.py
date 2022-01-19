@@ -8,6 +8,7 @@ Concrete SettingModule class for a specific experimental SettingModule
 from code.base_class.setting import setting
 from sklearn.model_selection import KFold
 import numpy as np
+import matplotlib.pyplot as pl
 
 class Setting_KFold_CV(setting):
     train   =None
@@ -17,20 +18,19 @@ class Setting_KFold_CV(setting):
     evaluate=None
     test_data = None
 
-    def load_run_save_evaluate(self,_size,fold):
-        fold_num=fold
+    def load_run_save_evaluate(self,_size,stage):
         # load dataset
         self.train_data = self.train.load()
         self.test_data=self.test.load()
         train_data = self.train_data
         test_data=self.test_data
-        fold_count = 0
+
         score_list = []
-        for i in range(fold_num):
+        loss_list=[]
+        for i in range(stage):
             test_index  =   np.random.randint(10000,size=3)
             train_index =   np.random.randint(60000,size=_size)
-            fold_count += 1
-            print('************ Fold:', fold_count, '************')
+
             X_train, X_test = np.array(train_data['X'])[train_index], np.array(test_data['X'])[test_index]
             y_train, y_test = np.array(train_data['y'])[train_index], np.array(test_data['y'])[test_index]
 
@@ -38,14 +38,12 @@ class Setting_KFold_CV(setting):
             self.method.data = {'train': {'X': X_train, 'y': y_train}, 'test': {'X': X_test, 'y': y_test}}
             learned_result = self.method.run()
 
-            # save raw ResultModule
-            self.result.data = learned_result
-            self.result.fold_count = fold_count
-            self.result.save()
-
-            self.evaluate.data = learned_result
+            self.evaluate.data = learned_result['result']
             score_list.append(self.evaluate.evaluate())
 
+            loss_list+=learned_result['loss']
+        pl.plot(range(0,len(loss_list)*100,100),loss_list,label='loss', color='purple')
+        pl.show()
         return np.mean(score_list), np.std(score_list)
 
     def do_evaluate(self):

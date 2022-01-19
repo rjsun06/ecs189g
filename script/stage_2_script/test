@@ -13,8 +13,8 @@ print('Fold:', 99, ', Result:', result_obj.data)
 
 evaluate_obj=Evaluate_Accuracy("test set")
 evaluate_obj.data=result_obj.data
-evaluate_obj.evaluate('weighted')
-evaluate_obj.evaluate('macro')
+evaluate_obj.full_evaluate('weighted')
+evaluate_obj.full_evaluate('macro')
 
 result_obj.fold_count = 98
 result_obj.load()
@@ -22,5 +22,5 @@ print('Fold:', 98, ', Result:', result_obj.data)
 
 evaluate_obj=Evaluate_Accuracy("train set")
 evaluate_obj.data=result_obj.data
-evaluate_obj.evaluate('weighted')
-evaluate_obj.evaluate('macro')
+evaluate_obj.full_evaluate('weighted')
+evaluate_obj.full_evaluate('macro')

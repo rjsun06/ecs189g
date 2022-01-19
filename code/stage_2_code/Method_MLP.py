@@ -66,6 +66,7 @@ class Method_MLP(method, nn.Module):
         # it will be an iterative gradient updating process
         # we don't do mini-batch, we use the whole input as one batch
         # you can try to split X and y into smaller-sized batches by yourself
+        loss_list=[]
         for epoch in range(self.max_epoch): # you can do an early stop if self.max_epoch is too much...
             # get the output, we need to covert X into torch.tensor so pytorch algorithm can operate on it
 
@@ -85,8 +86,10 @@ class Method_MLP(method, nn.Module):
             optimizer.step()
 
             if epoch%100 == 0:
+                loss_list.append(train_loss.item())
                 accuracy_evaluator.data = {'true_y': y_true, 'pred_y': y_pred.max(1)[1]}
                 print('Epoch:', epoch, 'Accuracy:', accuracy_evaluator.evaluate(), 'Loss:', train_loss.item())
+        return(loss_list)
     
     def test(self, X):
         # do the testing, and result the result
@@ -98,9 +101,9 @@ class Method_MLP(method, nn.Module):
     def run(self):
         print('method running...')
         print('--start training...')
-        self.train(self.data['train']['X'], self.data['train']['y'])
+        loss_list=self.train(self.data['train']['X'], self.data['train']['y'])
         print('--start testing...')
         pred_y = self.test(self.data['test']['X'])
         print("pred: ", pred_y, " true: ", self.data['test']['y'])
-        return {'pred_y': pred_y, 'true_y': self.data['test']['y']}
+        return {'result':{'pred_y': pred_y, 'true_y': self.data['test']['y']},'loss':loss_list}
             

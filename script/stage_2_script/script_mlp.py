@@ -40,13 +40,13 @@ if 1:
     learning_rate=10e-5
     epoch=1000
     size=2000
-    fold=20
+    stage=20
     # ---- running section ---------------------------------
     method_obj = Method_MLP('multi-layer perceptron', '', epoch, learning_rate)
     print('************ Start ************')
     setting_obj.prepare(trainset_obj, testset_obj, method_obj, result_obj, evaluate_obj)
     setting_obj.print_setup_summary()
-    mean_score, std_score = setting_obj.load_run_save_evaluate(size,fold)
+    mean_score, std_score = setting_obj.load_run_save_evaluate(size,stage)
     print('************ Overall Performance ************')
     print('MLP Accuracy: ' + str(mean_score) + ' +/- ' + str(std_score))
     print('************ final evaluation ************')

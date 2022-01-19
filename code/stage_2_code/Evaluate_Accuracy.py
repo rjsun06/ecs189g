@@ -13,10 +13,10 @@ class Evaluate_Accuracy(evaluate):
     data = None
     
     def evaluate(self):
-        print('evaluating performance...')
+        #print('evaluating performance...')
         return accuracy_score(self.data['true_y'], self.data['pred_y'])
 
-    def evaluate(self, average):
+    def full_evaluate(self, average):
         result=self.data
         print('testing',self.evaluate_name)
         print("overall acc: ", accuracy_score(result['true_y'], result['pred_y']))
