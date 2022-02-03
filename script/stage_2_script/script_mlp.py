@@ -5,8 +5,12 @@ from code.stage_2_code.Setting_KFold_CV import Setting_KFold_CV
 from code.stage_2_code.Evaluate_Accuracy import Evaluate_Accuracy
 import numpy as np
 import torch
-
+import os
+os.environ['CUDA_VISIBLE_DEVICES']= '0'
 #---- Multi-Layer Perceptron script ----
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(torch.cuda.is_available())
 if 1:
     #---- parameter section -------------------------------
     np.random.seed(2)
@@ -38,15 +42,14 @@ if 1:
     #    for epoch in [500,1000,2000]:
     #        for size in [100,500,1000]:
     learning_rate=10e-5
-    epoch=1000
-    size=2000
-    stage=20
+    epoch=8000
+    stage=1
     # ---- running section ---------------------------------
-    method_obj = Method_MLP('multi-layer perceptron', '', epoch, learning_rate)
+    method_obj = Method_MLP('multi-layer perceptron', '', epoch, learning_rate,device).to(device)
     print('************ Start ************')
     setting_obj.prepare(trainset_obj, testset_obj, method_obj, result_obj, evaluate_obj)
     setting_obj.print_setup_summary()
-    mean_score, std_score = setting_obj.load_run_save_evaluate(size,stage)
+    mean_score, std_score = setting_obj.load_run_save_evaluate(stage)
     print('************ Overall Performance ************')
     print('MLP Accuracy: ' + str(mean_score) + ' +/- ' + str(std_score))
     print('************ final evaluation ************')
