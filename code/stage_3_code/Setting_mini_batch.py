@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 import numpy as np
 import matplotlib.pyplot as pl
 import torch
-class Setting_KFold_CV(setting):
+class Setting_Mini_Batch(setting):
     train   =None
     test    =None
     method  =None
@@ -18,31 +18,34 @@ class Setting_KFold_CV(setting):
     evaluate=None
     test_data = None
 
-    def load_run_save_evaluate(self,stage):
+    def load_run_save_evaluate(self,stage,_size):
         # load dataset
         self.train_data = self.train.load()
         self.test_data=self.test.load()
         train_data = self.train_data
         test_data=self.test_data
-        
+        #print(torch.cuda.memory_allocated())
         score_list = []
         loss_list=[]
         for i in range(stage):
-            test_index  =   np.random.randint(10000,size=3)
-           # train_index =   np.random.randint(60000,size=_size)
 
-            X_train, X_test = np.array(train_data['X']), np.array(test_data['X'])[test_index]
-            y_train, y_test = np.array(train_data['y']), np.array(test_data['y'])[test_index]
+            test_index  =   np.random.randint(len(test_data['y']),size=3)
+            if _size==len(train_data['y']):
+                train_index =   range(0,_size)
+            else: train_index =   np.random.randint(len(train_data['y']),size=_size)
+
+            X_train, X_test = train_data['X'][train_index], test_data['X'][test_index]
+            y_train, y_test = train_data['y'][train_index], test_data['y'][test_index]
 
             # run MethodModule
             self.method.data = {'train': {'X': X_train, 'y': y_train}, 'test': {'X': X_test, 'y': y_test}}
-            
+            #print(torch.cuda.memory_allocated())
             learned_result = self.method.run()
 
             self.evaluate.data = learned_result['result']
             score_list.append(float(self.evaluate.evaluate()))
 
-            loss_list+=float(learned_result['loss'])
+            loss_list+=learned_result['loss']
         pl.plot(range(0,len(loss_list)*100,100),loss_list,label='loss', color='purple')
         pl.show()
         return np.mean(score_list), np.std(score_list)
@@ -51,8 +54,9 @@ class Setting_KFold_CV(setting):
         train_data =self.train_data
         test_data = self.test_data
         #test_index = np.random.randint(10000, size=size)
-
-        pred_y = self.method.test(np.array(train_data['X'])).cpu()
+        pred_y=torch.tensor([])
+        for i in range(4):
+            pred_y = torch.cat((pred_y,self.method.test(np.array(train_data['X'][range(i*int(len(train_data['X'])/4),(i+1)*int(len(train_data['X'])/4))])).cpu()),0)
         true_y = np.array(train_data['y'])
         self.evaluate.data = {'pred_y': pred_y, 'true_y': true_y}
         self.result.data = self.evaluate.data

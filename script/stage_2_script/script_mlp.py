@@ -6,16 +6,17 @@ from code.stage_2_code.Evaluate_Accuracy import Evaluate_Accuracy
 import numpy as np
 import torch
 import os
-os.environ['CUDA_VISIBLE_DEVICES']= '0'
-#---- Multi-Layer Perceptron script ----
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+# ---- Multi-Layer Perceptron script ----
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(torch.cuda.is_available())
 if 1:
-    #---- parameter section -------------------------------
+    # ---- parameter section -------------------------------
     np.random.seed(2)
     torch.manual_seed(2)
-    #------------------------------------------------------
+    # ------------------------------------------------------
 
     # ---- objection initialization setction ---------------
     trainset_obj = Dataset_Loader('stage2train', '')
@@ -26,26 +27,24 @@ if 1:
     testset_obj.dataset_source_folder_path = '../../data/stage_2_data/'
     testset_obj.dataset_source_file_name = 'test.csv'
 
-
-
     result_obj = Result_Saver('saver', '')
     result_obj.result_destination_folder_path = '../../result/stage_2_result/MLP_'
     result_obj.result_destination_file_name = 'prediction_result'
 
     setting_obj = Setting_KFold_CV('k fold cross validation', '')
-    #setting_obj = Setting_Tra
+    # setting_obj = Setting_Tra
     # in_Test_Split('train test split', '')
 
     evaluate_obj = Evaluate_Accuracy('accuracy', '')
     # ------------------------------------------------------
-    #for learning_rate in [10e-5,10e-6,10e-7]:
+    # for learning_rate in [10e-5,10e-6,10e-7]:
     #    for epoch in [500,1000,2000]:
     #        for size in [100,500,1000]:
-    learning_rate=10e-5
-    epoch=8000
-    stage=1
+    learning_rate = 10e-5
+    epoch = 8000
+    stage = 1
     # ---- running section ---------------------------------
-    method_obj = Method_MLP('multi-layer perceptron', '', epoch, learning_rate,device).to(device)
+    method_obj = Method_MLP('multi-layer perceptron', '', epoch, learning_rate, device).to(device)
     print('************ Start ************')
     setting_obj.prepare(trainset_obj, testset_obj, method_obj, result_obj, evaluate_obj)
     setting_obj.print_setup_summary()
@@ -58,6 +57,5 @@ if 1:
     print('************ Finish ************')
 
     # ------------------------------------------------------
-    
 
-    
+
