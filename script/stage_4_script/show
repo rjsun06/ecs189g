@@ -1,0 +1,3 @@
+import torch
+l=torch.FloatTensor([1,2])
+print(l.max(1)[1])

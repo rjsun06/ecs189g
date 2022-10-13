@@ -1,0 +1,26 @@
+from code.stage_2_code.Result_Loader import Result_Loader
+from code.stage_2_code.Evaluate_Accuracy import Evaluate_Accuracy
+
+
+
+result_obj = Result_Loader('saver', '')
+result_obj.result_destination_folder_path = '../../result/stage_4_result/RNN_'
+result_obj.result_destination_file_name = 'prediction_result'
+
+result_obj.fold_count = 99
+result_obj.load()
+#print('Fold:', 99, ', Result:', result_obj.data)
+
+evaluate_obj=Evaluate_Accuracy("test set")
+evaluate_obj.data=result_obj.data
+evaluate_obj.full_evaluate('weighted')
+#evaluate_obj.full_evaluate('macro')
+
+result_obj.fold_count = 98
+result_obj.load()
+#print('Fold:', 98, ', Result:', result_obj.data)
+
+evaluate_obj=Evaluate_Accuracy("train set")
+evaluate_obj.data=result_obj.data
+evaluate_obj.full_evaluate('weighted')
+#evaluate_obj.full_evaluate('macro')
